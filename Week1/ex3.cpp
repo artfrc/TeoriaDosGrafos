@@ -1,6 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+/*
+    O problema consiste em achar o baú.
+    É dado uma matriz que pode ser interpretada como um grafo.
+    Devemos percorrer essa matriz e verificar se é possível chegar até o baú (caracter '*')
+*/
+
 const int MAX = 123; // Número máximo de linhas e colunas que a matriz pode ter
 
 int columns, rows; // número de colunas e linhas

@@ -1,6 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+/*
+    O problema se resume em achar o número de componentes conexas que contem o grafo.
+    Podemos interpretar a matriz dada no problema como um grafo.
+*/
+
 const int MAX = 123; // número maximo de linhas e colunas que pode conter a matriz
 
 string arr[MAX]; // matriz
