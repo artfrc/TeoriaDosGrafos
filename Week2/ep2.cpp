@@ -3,97 +3,76 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAXN = 5123*2;
-
-typedef vector<vector<int>> vvi;
-
-vvi adj(MAXN); // lista de adjacencia dos vertices do grafo
-vvi reverseAdj(MAXN); // grafo com lista de adj reversa
-map<string,int> mp; // armazenar o indice de cada cidade
-stack<int> stk; // ordem dos vertices por tempo
-bool vis[MAXN]; // dizer se um vertice ja foi visitado
-vector<int> idxComponents(MAXN,-1); // guarda qual componente cada vertice pertence
-vector<int> nElementsComponents(MAXN,0); // numero de elementos q contem cada componente
-int nComponents; // numero total de componentes do grafo
+map<string,int> mp;
+vector<vector<int>> adj;
+vector<bool> vis;
+bool ans;
 
 void dfs(int idx) {
-    for(auto e : adj[idx]) {
-        if(!vis[e]) {
-            vis[e] = true;
-            dfs(e);
+    if(ans) return;
+    
+    for(auto neighbor : adj[idx]) {
+        if(vis[neighbor]) {
+            ans = true;
+            return;
         }
-    }
-    stk.push(idx);
-}
-
-void dfs2(int idx) {
-    for(auto e : reverseAdj[idx]) {
-        if(idxComponents[e] == -1) {
-            idxComponents[e] = nComponents;
-            nElementsComponents[nComponents]++;
-            dfs2(e);
-        }
+        vis[neighbor] = true;
+        dfs(neighbor);
     }
 }
 
 void solve() {
     int n;
     cin >> n;
-    
+
     int nCitys = 0;
-
+    vector<int> v;
+    
     for(int i = 0; i < n; i++) {
-        string c1, c2;
-        cin >> c1 >> c2;
+        string city1, city2;
+        cin >> city1 >> city2;
 
-        if(mp.find(c1) == mp.end()) { // nova cidade para o grafo
-            mp[c1] = nCitys; // cidade c1 será o indice nCitys no vector adj
+        if(mp.find(city1) == mp.end()) {
+            mp[city1] = nCitys;
             nCitys++;
+            adj.push_back(v);
+            vis.push_back(false);
         }
 
-        if(mp.find(c2) == mp.end()) { // nova cidade para o grafo
-            mp[c2] = nCitys; // cidade c2 será o indice nCitys no vector adj
+        if(mp.find(city2) == mp.end()) {
+            mp[city2] = nCitys;
             nCitys++;
+            adj.push_back(v);
+            vis.push_back(false);
         }
 
-        int idxCity1 = mp[c1];
-        int idxCity2 = mp[c2];
+        int idxCity1 = mp[city1];
+        int idxCity2 = mp[city2];
 
         adj[idxCity1].push_back(idxCity2);
-        reverseAdj[idxCity2].push_back(idxCity1);
-    }
-        
-    // Algoritmo de Kosaraju's => Irá encontrar as componentes fortemente conexas do grafo
-    
-    // Passo 1: dfs
-    memset(vis,false,sizeof(vis));
-    for(int i = 0; i < nCitys; i++) {
-        if(!vis[i]) {
-            vis[i] = true;
-            dfs(i);
-        } 
-    }
-
-    // Passo 2: grafo reverso, outra dfs e encontrar as componentes
-    nComponents = 0;
-    while(!stk.empty()) {
-        int v = stk.top();
-        stk.pop();
-        if(idxComponents[v] == -1) {
-            idxComponents[v] = nComponents;
-            nElementsComponents[nComponents]++;
-            dfs2(v);
-            nComponents++;
-        }
     }
 
     string city;
+
     while(cin >> city) {
-        int idxCity = mp[city];
-        int idxComponentCity = idxComponents[idxCity];
-        if(nElementsComponents[idxComponentCity] > 1) cout << city << " safe\n";
-        else cout << city << " trapped\n";
-    }    
+        if(mp.find(city) == mp.end()) {
+            cout << city << " trapped\n";
+        } else {
+            int idxCity = mp[city];
+            
+            for(auto e : vis)
+                e = false;
+
+            vis[idxCity] = true;
+            ans = false;
+
+            dfs(idxCity);
+
+            if(ans) cout << city << " safe\n";
+            else cout << city << " trapped\n";
+        }
+    }
+
 }
 
 int main() {
