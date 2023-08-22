@@ -3,31 +3,17 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+const int MAXN = 5123 * 2;
 map<string,int> mp;
-vector<vector<int>> adj;
-vector<bool> vis;
-bool ans;
-
-void dfs(int idx) {
-    if(ans) return;
-    
-    for(auto neighbor : adj[idx]) {
-        if(vis[neighbor]) {
-            ans = true;
-            return;
-        }
-        vis[neighbor] = true;
-        dfs(neighbor);
-    }
-}
+vector<vector<int>> adj(MAXN);
+vector<int> degree(MAXN,0);
+bool vis[MAXN];
+int nCitys = 0;
 
 void solve() {
     int n;
     cin >> n;
 
-    int nCitys = 0;
-    vector<int> v;
-    
     for(int i = 0; i < n; i++) {
         string city1, city2;
         cin >> city1 >> city2;
@@ -35,44 +21,42 @@ void solve() {
         if(mp.find(city1) == mp.end()) {
             mp[city1] = nCitys;
             nCitys++;
-            adj.push_back(v);
-            vis.push_back(false);
         }
 
         if(mp.find(city2) == mp.end()) {
             mp[city2] = nCitys;
             nCitys++;
-            adj.push_back(v);
-            vis.push_back(false);
         }
 
         int idxCity1 = mp[city1];
         int idxCity2 = mp[city2];
 
-        adj[idxCity1].push_back(idxCity2);
+        adj[idxCity2].push_back(idxCity1);
+        degree[idxCity1]++;
     }
 
-    string city;
+    queue<int> q;
 
-    while(cin >> city) {
-        if(mp.find(city) == mp.end()) {
-            cout << city << " trapped\n";
-        } else {
-            int idxCity = mp[city];
-            
-            for(auto e : vis)
-                e = false;
+    for(int i = 0; i < nCitys; i++) {
+        if(degree[i] == 0) q.push(i);
+    }
 
-            vis[idxCity] = true;
-            ans = false;
-
-            dfs(idxCity);
-
-            if(ans) cout << city << " safe\n";
-            else cout << city << " trapped\n";
+    while(!q.empty()) {
+        int idx = q.front();
+        q.pop();
+        for(auto e : adj[idx]) {
+            degree[e]--;
+            if(degree[e] == 0) q.push(e);
         }
     }
 
+    string city;
+    
+    while(cin >> city) {
+        int idxCity = mp[city];
+        if(degree[idxCity] < 1) cout << city << " trapped\n"; 
+        else cout << city << " safe\n";
+    } 
 }
 
 int main() {
