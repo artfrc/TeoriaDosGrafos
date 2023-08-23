@@ -14,14 +14,14 @@ bool ans; // auxilia na hora de printar a saida
 void dfs(int idx, stack<int>& topologicalOrder) {
     if(!ans) return;
     
-    vis[idx] = 1;
+    vis[idx] = 1; // visitei mas ainda nao terminei de visitar os filhos
     
     for(auto e : adj[idx]) {
-        if(vis[e] == 0) dfs(e,topologicalOrder);
-        else if(vis[e] == 1) ans = false;
+        if(vis[e] == 0) dfs(e,topologicalOrder); // vertice ainda não visitado, logo jogo pra dfs
+        else if(vis[e] == 1) ans = false; // encontrei uma vareta que em teoria está sobre essa atual, porém ao encontrar ela agora, significa que ela está embaixo. Isso é contraditório, não pode acontecer as duas situações ao mesmo tempo
     }
-    topologicalOrder.push(idx);
-    vis[idx] = 2;
+    topologicalOrder.push(idx); // insiro na minha pilha
+    vis[idx] = 2; // visitei e terminei de visitar os filhos
 }
 
 void solve() {

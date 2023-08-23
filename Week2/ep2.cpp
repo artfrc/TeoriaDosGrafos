@@ -3,12 +3,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAXN = 5123 * 2;
-map<string,int> mp;
-vector<vector<int>> adj(MAXN);
-vector<int> degree(MAXN,0);
-bool vis[MAXN];
-int nCitys = 0;
+const int MAXN = 5123 * 2; // numero maximo de cidades que pode ter no problema
+map<string,int> mp; // mapeia o nome da cidade para um indice
+vector<vector<int>> adj(MAXN); // lista de adjacencia do grafo
+vector<int> degree(MAXN,0); // grau de cada vértice
+bool vis[MAXN]; // marca se um vertice ja foi visitado
+int nCitys = 0; // numero de cidades
 
 void solve() {
     int n;
@@ -32,15 +32,19 @@ void solve() {
         int idxCity2 = mp[city2];
 
         adj[idxCity2].push_back(idxCity1);
-        degree[idxCity1]++;
+        degree[idxCity1]++; // grau de cada vértice
+        // grafo original: grau de saída
+        // grafo transposto: grau de entrada
     }
 
     queue<int> q;
 
+    // adicionamos na fila todas as cidades com grau 0, ou seja, cidades trappeds
     for(int i = 0; i < nCitys; i++) {
         if(degree[i] == 0) q.push(i);
     }
 
+    // verificamos todas as cidades que nos levam a uma cidade trapped e "retiramos" essa aresta do grafo (dregree[e]--)
     while(!q.empty()) {
         int idx = q.front();
         q.pop();
