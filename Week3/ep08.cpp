@@ -4,7 +4,6 @@
 using namespace std;
 
 const int MAXN = 1e5+59; // numero max de vertices que pode conter o grafo
-
 typedef vector<vector<int>> vvi;
 
 vector<int> leaves; // guardar as folhas do grafo
