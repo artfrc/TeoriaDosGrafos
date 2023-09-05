@@ -1,76 +1,104 @@
-// https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=16&page=show_problem&problem=2870
-
 #include <bits/stdc++.h>
 using namespace std;
 
-/* ============================================== >> EXPLICACAO << ==============================================
-|
-|    O problema consiste em um campo que contem postes de luzes e o personagem comprou luzes inteligentes para esses postes.
-|    Dependendo da distancia entre dois postes, quando o A acende a luz, se o poste B tiver perto suficiente, então poste B acende, 
-|    se tiver um C por perto, então o C tbm acende e assim por diante. Para ligar um poste, o personagem tem q apertar um botão. 
-|    Enfim, o problema quer saber quantas vezes o personagem tem que apertar o botão para acender todas as luzes do campo.
-|    Em outras palavras, quer saber o número de componentes fortemente conexas. Basta usar o algoritmo de Kosaraju's visto em sala.
-|
-|  ============================================== >> EXPLICACAO << ============================================== */
+const int MAXN = 11234;
 
 typedef vector<vector<int>> vvi;
 
-const int MAX = 11234; // numero maximo de vertices que o grafo do problema pode ter
+vvi adjNormal(MAXN); // lista adj grafo normal
+vvi adjInv(MAXN); // lista adj do grafo invertido
+bool vis[MAXN];
+bool blind[MAXN]; // diz se o vértice tem grau de entrada zero no grafo original
 
-bool vis[MAX] = {false};
-vvi adj(MAX);
-set<pair<int,int>> st; // {nro. adj/vtx}
-
-// DFS no grafo inverso para achar as componentes fortemente conexas do grafo
-void dfsGraph(int idx) {
-    for(auto e : adj[idx]) {
+// Primeira DFS do algortimo de kosaraju's
+void dfsGraphNormal(int idx, stack<int>& stk) {
+    vis[idx] = true;
+    for(auto e : adjNormal[idx]) {
         if(!vis[e]) {
-            vis[e] = true;
-            dfsGraph(e);
+            dfsGraphNormal(e,stk);
         }
     }
+    stk.push(idx);
+}
+
+// Segunda DFS do algoritmo de kosaraju's
+void dfsGraphInv(int idx, int& ans) {
+    vis[idx] = true;
+    
+    if(blind[idx]) { // é um vertice que não vai para lugar nenhum, logo é uma luz que precisa ser ligada manualmente
+        ans++;
+        return;
+    }
+
+    bool passBlind = false; // diz se idx eh um vertice que chega em algum outro vertice que é blind (luz que precisa ser ligada manualmente)
+
+    for(auto e : adjInv[idx]) {
+        
+        if(blind[e]) {
+            // atraves do vertice "e", a luz idx é acesa, ou seja, não é preciso ligar manualmente a luz "idx"
+            passBlind = true;
+            break;
+        }
+
+        if(!vis[e]) {
+            dfsGraphInv(e,ans);
+        } else {
+            // se estou em uma luz que já foi visitada, entao quer dizer que essa será acesa automaticamente tb
+            passBlind = true;
+        }
+    }
+
+    if(!passBlind) ++ans; // se não passei por nenhuma luz que já foi ligada entao deve ser acendida manualmente
 }
 
 void solve() {
-    int t, c = 0;
-    int nVertex, nEdges;
+    int t, count = 0;
     cin >> t;
+    
     while(t--) {
-        cout << "Case " << ++c << ": ";
+        int vtx, edges;
+        cin >> vtx >> edges;
 
-        cin >> nVertex >> nEdges;
-        
-        for(int i = 0; i < nEdges; i++) {
+        // Resetando variaveis
+        for(int i = 0; i< edges; i++) {
+            adjNormal[i].clear();
+            adjInv[i].clear();
+            vis[i] = false;
+            blind[i] = true;
+        }
+
+        // Leitura da entrada
+        for(int i = 0; i < edges; i++) {
             int v1, v2;
             cin >> v1 >> v2;
-            
-            adj[v1].push_back(v2);
+            adjNormal[v1].push_back(v2);
+            adjInv[v2].push_back(v1);
+            blind[v2] = false; // vertice não possui grau de entrada zero
         }
 
-        for(int i = 1; i <= nVertex; i++) {
-            st.insert({adj[i].size(),i});
-        }
+        stack<int> stk;
 
-        int ans = 0;
-
-        for(auto it = st.rbegin(); it != st.rend(); it++) {
-            if(!vis[it->second]) {
-                ++ans;
-                vis[it->second] = true;
-                dfsGraph(it->second);
+        // Pt. 1 algoritmo kosaraju's
+        for(int i = 0; i < vtx; i++) {
+            if(!vis[i]) {
+                dfsGraphNormal(i,stk);
             }
         }
 
-        cout << ans << "\n";
+        memset(vis,false,sizeof(vis));
 
-        // Resetar variaveis
-        for(int i = 1; i <= nVertex; i++) {
-            adj[i].clear();
-            vis[i] = false;
+        int ans = 0;
+
+        // Pt. 2
+        while(!stk.empty()) {
+            auto e = stk.top();
+            stk.pop();
+            if(!vis[e]) {
+                dfsGraphInv(e,ans);
+            }
         }
-        st.clear();
+        cout << "Case " << ++count << ": " << ans << "\n";
     }
-
 }
 
 int main() {

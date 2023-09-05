@@ -8,7 +8,6 @@ typedef vector<vector<int>> vvi;
 const int MAX = 123;
 
 map<string,int> mp; // armazenar o index de cada palavra
-bool arr[MAX][MAX]; // matriz de adj
 bool vis[MAX];
 vvi adj(MAX); // lista de adj grafo normal
 vvi adjInv(MAX); // lista de adj grafo inv
@@ -25,7 +24,7 @@ void dfsGraphNormal(int idx, stack<int>& stk) {
 
 void dfsGraphInv(int idx, set<string>& st) {
     /* ==========================================================================================
-        Essa dfs é passado tbm como parametro um Set para ir armazenando a componente fortemente conexa encontrada na dfs.
+    |    Essa dfs é passado tbm como parametro um Set para ir armazenando a componente fortemente conexa encontrada na dfs.
     |  ========================================================================================== */
     vis[idx] = true;
     
@@ -57,8 +56,12 @@ void solve() {
 
         // Resetando variaveis
         int words = 0;
-        memset(arr,false,sizeof(arr));
         memset(vis,false,sizeof(vis));
+        mp.clear();
+        for(int i = 0; i <= n; i++) {
+            adj[i].clear();
+            adjInv[i].clear();
+        }
 
         // Leitura do input e criacao das listas de adj
         for(int i = 0; i < n; i++) {
@@ -75,11 +78,8 @@ void solve() {
                     idxWord = mp[line];
                 } else {
                     idxDefinition = mp[line];
-                    if(!arr[idxWord][idxDefinition]) {
-                        arr[idxWord][idxDefinition] = true;
-                        adj[idxWord].push_back(idxDefinition);
-                        adjInv[idxDefinition].push_back(idxWord);
-                    }
+                    adj[idxWord].push_back(idxDefinition);
+                    adjInv[idxDefinition].push_back(idxWord);
                 }
             }
         }
