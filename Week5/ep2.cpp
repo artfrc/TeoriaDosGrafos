@@ -23,7 +23,7 @@ public:
     }
 };
 
-// Procurar o pai de um vertice
+// Procura o pai de um vertice e tambem atualiza se necessário
 int find(int idx, int parent[]) {
     if(parent[idx] == idx) return idx;
     return parent[idx] = find(parent[idx],parent);
@@ -35,6 +35,7 @@ void Union(Edge e, int parent[], lli weight[]) {
     int parentV2 = find(e.v2,parent);
 
     if(parentV1 != parentV2) {
+        // comparações para balancear na hora de unir as componentes
         if(weight[parentV1] < weight[parentV2]) parent[parentV1] = parentV2;
         else if(weight[parentV1] > weight[parentV2]) parent[parentV2] = parentV1;
         else {
@@ -79,6 +80,8 @@ void solve() {
             int v2 = edg.v2;
             lli cost = edg.cost;
 
+            // se nao fazem parte da mesma componente...
+            // ou seja, se colocar a aresta edg na arvore geradora minima, um ciclo NAO eh formado
             if(find(v1,parent) != find(v2,parent)) {
                 minCost += cost;
                 Union(edg,parent,weight);
