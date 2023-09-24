@@ -7,14 +7,16 @@ typedef pair<int,int> pii;
 
 int r1,r2,r3;
 int c1,c2,c3;
-int dist[MAX][MAX];
+int dist[MAX][MAX]; // matriz que guarda as distancias
+
+// direcoes que o rei pode andar em um lance
 int arrx[] = {-1,1,0,0,-1,-1,1,1};
 int arry[] = {0,0,-1,1,-1,1,-1,1};
 
 void dijkstra(int row, int column) {
 
-    memset(dist,-1,sizeof(dist));
-    set<pair<int,pii>> Queue;
+    memset(dist,-1,sizeof(dist)); // reseta todas distancias para -1
+    set<pair<int,pii>> Queue; // substitui a priority_queue
     Queue.insert({0,{row,column}}); // dist / coordenadas(x,y)
     pair<int,pii> aux;
     while(!Queue.empty()) {
@@ -25,12 +27,15 @@ void dijkstra(int row, int column) {
         int distv = aux.first;
         if(dist[row][column] == -1) {
             dist[row][column] = distv;
-            if(row == r2 and column == c2) return;
+            if(row == r2 and column == c2) return; // ja achei a dist do ponto desejado, paro aqui
             for(int i = 0; i < 8; i++) {
                 int newRow = row+arrx[i];
                 int newColumn = column+arry[i];
-                if(newRow < 0 or newRow >= MAX or newColumn < 0 or newColumn >= MAX) continue; // posição invalida
-                if((newRow == r3 and newColumn == c3) or dist[newRow][newColumn] != -1) continue;
+
+                // posicoes invalidas
+                if(newRow < 0 or newRow >= MAX or newColumn < 0 or newColumn >= MAX) continue; // fora da matriz
+                if((newRow == r3 and newColumn == c3) or dist[newRow][newColumn] != -1) continue; // posição retirada no input / posição ja visitada
+                
                 Queue.insert({ distv+1, {newRow,newColumn} });
             }
         }
