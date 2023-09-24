@@ -81,7 +81,7 @@ void solve() {
             lli cost = edg.cost;
 
             // se nao fazem parte da mesma componente...
-            // ou seja, se colocar a aresta edg na arvore geradora minima, um ciclo NAO eh formado
+            // ou seja, se colocar a aresta edg na arvore geradora minima, um ciclo NAO eh formado          
             if(find(v1,parent) != find(v2,parent)) {
                 minCost += cost;
                 Union(edg,parent,weight);
