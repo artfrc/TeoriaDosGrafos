@@ -12,7 +12,7 @@ int dist[MAX][MAX]; // matriz que guarda as distancias
 // direcoes que o rei pode andar em um lance (esquerda, direita, cima, baixo e diagonais)
 int arrx[] = {-1,1,0,0,-1,-1,1,1};
 int arry[] = {0,0,-1,1,-1,1,-1,1};
-
+    
 void dijkstra(int row, int column) {
 
     memset(dist,-1,sizeof(dist)); // reseta todas distancias para -1
